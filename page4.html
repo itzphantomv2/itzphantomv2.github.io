@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shoutout</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #111827, #6d28d9);
+      color: white;
+    }
+    .menu-btn {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 32px;
+      cursor: pointer;
+      z-index: 1001;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -220px;
+      width: 220px;
+      height: 100%;
+      background: #111827;
+      padding-top: 70px;
+      transition: left 0.3s ease;
+      z-index: 1000;
+    }
+    .sidebar a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      padding: 15px 20px;
+    }
+    .sidebar.open {
+      left: 0;
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.4);
+      z-index: 999;
+    }
+    .overlay.show {
+      display: block;
+    }
+    .box {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+    .content {
+      background: rgba(255,255,255,0.1);
+      padding: 40px;
+      border-radius: 16px;
+      max-width: 500px;
+    }
+    a.link {
+      color: #fbbf24;
+      font-weight: bold;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
+  <div id="sidebar" class="sidebar">
+    <a href="index.html">Home</a>
+    <a href="sub.html">Sub Page</a>
+    <a href="page3.html">About Me</a>
+    <a href="page4.html">Shoutout</a>
+  </div>
+  <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
+
+  <div class="box">
+    <div class="content">
+      <h1>Shoutout to itzpulse</h1>
+      <p>Big shoutout to <strong>itzpulse</strong> for supporting the site!</p>
+      <p><a class="link" href="https://youtube.com/@itzpulse" target="_blank">Visit itzpulse on YouTube</a></p>
+    </div>
+  </div>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById("sidebar").classList.toggle("open");
+      document.getElementById("overlay").classList.toggle("show");
+    }
+  </script>
+</body>
+</html>
