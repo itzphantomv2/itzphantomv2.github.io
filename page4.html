@@ -10,7 +10,14 @@
       font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #111827, #6d28d9);
       color: white;
+      animation: fadeIn 0.5s ease-in;
     }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
     .menu-btn {
       position: fixed;
       top: 15px;
@@ -21,7 +28,13 @@
       font-size: 32px;
       cursor: pointer;
       z-index: 1001;
+      transition: transform 0.2s ease;
     }
+
+    .menu-btn:hover {
+      transform: scale(1.1);
+    }
+
     .sidebar {
       position: fixed;
       top: 0;
@@ -31,17 +44,27 @@
       background: #111827;
       padding-top: 70px;
       transition: left 0.3s ease;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.3);
       z-index: 1000;
     }
+
+    .sidebar.open {
+      left: 0;
+    }
+
     .sidebar a {
       display: block;
       color: white;
       text-decoration: none;
       padding: 15px 20px;
+      transition: background 0.2s ease, transform 0.2s ease;
     }
-    .sidebar.open {
-      left: 0;
+
+    .sidebar a:hover {
+      background: #312e81;
+      transform: translateX(4px);
     }
+
     .overlay {
       display: none;
       position: fixed;
@@ -52,9 +75,11 @@
       background: rgba(0,0,0,0.4);
       z-index: 999;
     }
+
     .overlay.show {
       display: block;
     }
+
     .box {
       min-height: 100vh;
       display: flex;
@@ -63,12 +88,21 @@
       text-align: center;
       padding: 20px;
     }
+
     .content {
       background: rgba(255,255,255,0.1);
       padding: 40px;
       border-radius: 16px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
       max-width: 500px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
+
+    .content:hover {
+      transform: scale(1.01);
+    }
+
     a.link {
       color: #fbbf24;
       font-weight: bold;
@@ -78,12 +112,14 @@
 </head>
 <body>
   <button class="menu-btn" onclick="toggleMenu()">☰</button>
+
   <div id="sidebar" class="sidebar">
     <a href="index.html">Home</a>
     <a href="sub.html">Sub Page</a>
     <a href="page3.html">About Me</a>
     <a href="page4.html">Shoutout</a>
   </div>
+
   <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
 
   <div class="box">
