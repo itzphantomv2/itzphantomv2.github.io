@@ -4,18 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sub Page</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-background: linear-gradient(135deg, #7f1d1d 0%, #ef4444 100%);
+      font-family: 'Poppins', Arial, sans-serif;
+      background: linear-gradient(135deg, #7f1d1d 0%, #ef4444 100%);
       color: white;
       animation: fadeIn 0.5s ease-in;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .menu-btn {
@@ -52,26 +57,28 @@ background: linear-gradient(135deg, #7f1d1d 0%, #ef4444 100%);
       left: 0;
     }
 
-  .sidebar a {
-  display: block;
-  color: #f8fafc;
-  text-decoration: none;
-  padding: 16px 20px;
-  font-size: 18px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  border-left: 4px solid transparent;
-  transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
-}
+    .sidebar a {
+      display: block;
+      color: #f8fafc;
+      text-decoration: none;
+      padding: 16px 20px;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      border-left: 4px solid transparent;
+      transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+      animation: fadeIn 0.5s ease-in;
+    }
 
-.sidebar a:hover {
-  background: rgba(255,255,255,0.08);
-  transform: translateX(5px);
-  border-left: 4px solid #22c55e;
-}
+    .sidebar a:nth-child(1) { animation-delay: 0.05s; }
+    .sidebar a:nth-child(2) { animation-delay: 0.10s; }
+    .sidebar a:nth-child(3) { animation-delay: 0.15s; }
+    .sidebar a:nth-child(4) { animation-delay: 0.20s; }
+
     .sidebar a:hover {
-      background: #7f1d1d;
-      transform: translateX(4px);
+      background: rgba(255,255,255,0.08);
+      transform: translateX(5px);
+      border-left: 4px solid #22c55e;
     }
 
     .overlay {
@@ -100,11 +107,11 @@ background: linear-gradient(135deg, #7f1d1d 0%, #ef4444 100%);
 
     .content {
       background: rgba(255,255,255,0.1);
-      padding: 40px;
+      padding: 60px;
       border-radius: 16px;
       backdrop-filter: blur(8px);
       box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-      max-width: 500px;
+      max-width: 650px;
       min-width: 320px;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
