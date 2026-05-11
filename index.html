@@ -52,13 +52,23 @@
       left: 0;
     }
 
-    .sidebar a {
-      display: block;
-      color: white;
-      text-decoration: none;
-      padding: 15px 20px;
-      transition: background 0.2s ease, transform 0.2s ease;
-    }
+.sidebar a {
+  display: block;
+  color: #f8fafc;
+  text-decoration: none;
+  padding: 16px 20px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  border-left: 4px solid transparent;
+  transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.sidebar a:hover {
+  background: rgba(255,255,255,0.08);
+  transform: translateX(5px);
+  border-left: 4px solid #22c55e;
+}
 
     .sidebar a:hover {
       background: #1e293b;
