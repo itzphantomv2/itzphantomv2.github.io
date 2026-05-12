@@ -7,20 +7,50 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     body {
       margin: 0;
       font-family: 'Poppins', Arial, sans-serif;
-      background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
       color: white;
-      animation: fadeIn 0.5s ease-in;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: linear-gradient(135deg, #020617 0%, #0f172a 35%, #1d4ed8 100%);
+      animation: fadeIn 0.6s ease-in;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.35), transparent 25%),
+        radial-gradient(circle at 80% 30%, rgba(34, 197, 94, 0.22), transparent 22%),
+        radial-gradient(circle at 50% 80%, rgba(168, 85, 247, 0.22), transparent 25%);
+      filter: blur(20px);
+      z-index: -2;
+      animation: floatBG 10s ease-in-out infinite alternate;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(120deg, rgba(255,255,255,0.06), transparent 40%, rgba(255,255,255,0.03));
+      z-index: -1;
+      pointer-events: none;
     }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes floatBG {
+      from { transform: translateY(0px) scale(1); }
+      to { transform: translateY(-20px) scale(1.05); }
     }
 
     .menu-btn {
@@ -70,11 +100,6 @@
       animation: fadeIn 0.5s ease-in;
     }
 
-    .sidebar a:nth-child(1) { animation-delay: 0.05s; }
-    .sidebar a:nth-child(2) { animation-delay: 0.10s; }
-    .sidebar a:nth-child(3) { animation-delay: 0.15s; }
-    .sidebar a:nth-child(4) { animation-delay: 0.20s; }
-
     .sidebar a:hover {
       background: rgba(255,255,255,0.08);
       transform: translateX(5px);
@@ -88,7 +113,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0,0,0,0.45);
       z-index: 999;
     }
 
@@ -107,13 +132,14 @@
 
     .content {
       background: rgba(255,255,255,0.08);
-      padding: 60px;
-      border-radius: 16px;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-      max-width: 700px;
-      min-width: 320px;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      padding: 60px 40px;
+      border-radius: 22px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+      max-width: 750px;
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.12);
+      transition: transform 0.2s ease;
     }
 
     .content:hover {
@@ -122,20 +148,20 @@
 
     h1 {
       margin-top: 0;
-      font-size: 2.8rem;
+      font-size: 3rem;
       font-weight: 800;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.35);
     }
 
     p {
       color: #d1d5db;
-      margin-bottom: 25px;
       font-size: 1.1rem;
       font-weight: 600;
     }
 
     .buttons {
       display: flex;
-      gap: 20px;
+      gap: 18px;
       justify-content: center;
       flex-wrap: wrap;
       margin-top: 30px;
@@ -150,7 +176,7 @@
       cursor: pointer;
       transition: all 0.25s ease;
       color: white;
-      min-width: 160px;
+      min-width: 170px;
     }
 
     .year7 {
@@ -181,19 +207,26 @@
       margin-top: 20px;
       font-size: 1rem;
       color: #f8fafc;
-      font-weight: 600;
+      font-weight: 700;
+      min-height: 24px;
     }
 
     .back {
       display: inline-block;
       margin-top: 30px;
-      color: #22c55e;
+      color: #93c5fd;
       text-decoration: none;
       font-weight: bold;
     }
 
     .back:hover {
       text-decoration: underline;
+    }
+
+    .current-vote {
+      margin-top: 10px;
+      font-size: 0.95rem;
+      color: #bfdbfe;
     }
   </style>
 </head>
@@ -215,7 +248,7 @@
   <div class="box">
     <div class="content">
       <h1>Year 7 vs Year 8</h1>
-      <p>Vote for which year group is better.</p>
+      <p>Vote for which year group is better — and change your vote anytime.</p>
 
       <div class="buttons">
         <button class="vote-btn year7" onclick="vote('Year 7')">Year 7</button>
@@ -228,6 +261,7 @@
       </div>
 
       <div class="message" id="message"></div>
+      <div class="current-vote" id="currentVote"></div>
 
       <a class="back" href="index.html">← Back to Home</a>
     </div>
@@ -241,36 +275,38 @@
 
     let year7Votes = parseInt(localStorage.getItem("year7Votes")) || 0;
     let year8Votes = parseInt(localStorage.getItem("year8Votes")) || 0;
+    let userVote = localStorage.getItem("userVote") || "";
 
-    document.getElementById("year7Votes").textContent = year7Votes;
-    document.getElementById("year8Votes").textContent = year8Votes;
-
-    function vote(choice) {
-      if (localStorage.getItem("hasVoted")) {
-        document.getElementById("message").textContent = "You have already voted!";
-        return;
-      }
-
-      if (choice === "Year 7") {
-        year7Votes++;
-        localStorage.setItem("year7Votes", year7Votes);
-      } else if (choice === "Year 8") {
-        year8Votes++;
-        localStorage.setItem("year8Votes", year8Votes);
-      }
-
-      localStorage.setItem("hasVoted", "true");
+    function updateDisplay() {
       document.getElementById("year7Votes").textContent = year7Votes;
       document.getElementById("year8Votes").textContent = year8Votes;
-      document.getElementById("message").textContent = "Thanks for voting for " + choice + "!";
 
-      document.querySelectorAll(".vote-btn").forEach(btn => btn.disabled = true);
+      document.getElementById("message").textContent = userVote
+        ? "You can change your vote anytime."
+        : "Pick your favorite year group.";
+
+      document.getElementById("currentVote").textContent = userVote
+        ? "Your current vote: " + userVote
+        : "You haven't voted yet.";
     }
 
-    if (localStorage.getItem("hasVoted")) {
-      document.querySelectorAll(".vote-btn").forEach(btn => btn.disabled = true);
-      document.getElementById("message").textContent = "You have already voted!";
+    function vote(choice) {
+      if (userVote === "Year 7") year7Votes--;
+      if (userVote === "Year 8") year8Votes--;
+
+      if (choice === "Year 7") year7Votes++;
+      if (choice === "Year 8") year8Votes++;
+
+      userVote = choice;
+
+      localStorage.setItem("year7Votes", year7Votes);
+      localStorage.setItem("year8Votes", year8Votes);
+      localStorage.setItem("userVote", userVote);
+
+      updateDisplay();
     }
+
+    updateDisplay();
   </script>
 </body>
 </html>
