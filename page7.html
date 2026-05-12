@@ -1,1 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Year 7 vs Year 8 Vote</title>
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+    }
 
+    .content {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 50px 35px;
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(8px);
+      max-width: 700px;
+      width: 100%;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 2.5rem;
+      font-weight: 800;
+    }
+
+    p {
+      color: #d1d5db;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+
+    .vote-btn {
+      padding: 16px 34px;
+      border: none;
+      border-radius: 999px;
+      font-size: 20px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      color: white;
+      min-width: 160px;
+    }
+
+    .year7 {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      box-shadow: 0 8px 20px rgba(34, 197, 94, 0.35);
+    }
+
+    .year8 {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      box-shadow: 0 8px 20px rgba(249, 115, 22, 0.35);
+    }
+
+    .vote-btn:hover {
+      transform: translateY(-3px) scale(1.05);
+    }
+
+    .vote-btn:active {
+      transform: scale(0.98);
+    }
+
+    .results {
+      margin-top: 35px;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .message {
+      margin-top: 20px;
+      font-size: 1rem;
+      color: #f8fafc;
+      font-weight: 600;
+    }
+
+    .back {
+      display: inline-block;
+      margin-top: 30px;
+      color: #22c55e;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .back:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <h1>Year 7 vs Year 8</h1>
+    <p>Vote for which year group is better.</p>
+
+    <div class="buttons">
+      <button class="vote-btn year7" onclick="vote('Year 7')">Year 7</button>
+      <button class="vote-btn year8" onclick="vote('Year 8')">Year 8</button>
+    </div>
+
+    <div class="results">
+      <p>Year 7 Votes: <span id="year7Votes">0</span></p>
+      <p>Year 8 Votes: <span id="year8Votes">0</span></p>
+    </div>
+
+    <div class="message" id="message"></div>
+
+    <a class="back" href="index.html">← Back to Home</a>
+  </div>
+
+  <script>
+    let year7Votes = parseInt(localStorage.getItem("year7Votes")) || 0;
+    let year8Votes = parseInt(localStorage.getItem("year8Votes")) || 0;
+
+    document.getElementById("year7Votes").textContent = year7Votes;
+    document.getElementById("year8Votes").textContent = year8Votes;
+
+    function vote(choice) {
+      if (localStorage.getItem("hasVoted")) {
+        document.getElementById("message").textContent = "You have already voted!";
+        return;
+      }
+
+      if (choice === "Year 7") {
+        year7Votes++;
+        localStorage.setItem("year7Votes", year7Votes);
+      } else if (choice === "Year 8") {
+        year8Votes++;
+        localStorage.setItem("year8Votes", year8Votes);
+      }
+
+      localStorage.setItem("hasVoted", "true");
+      document.getElementById("year7Votes").textContent = year7Votes;
+      document.getElementById("year8Votes").textContent = year8Votes;
+      document.getElementById("message").textContent = "Thanks for voting for " + choice + "!";
+
+      document.querySelectorAll(".vote-btn").forEach(btn => btn.disabled = true);
+    }
+
+    if (localStorage.getItem("hasVoted")) {
+      document.querySelectorAll(".vote-btn").forEach(btn => btn.disabled = true);
+      document.getElementById("message").textContent = "You have already voted!";
+    }
+  </script>
+</body>
+</html>
