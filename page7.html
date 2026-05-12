@@ -131,43 +131,53 @@
     }
 
     .content {
-  background: rgba(255,255,255,0.08);
-  padding: 45px 30px;
-  border-radius: 22px;
-  backdrop-filter: blur(14px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
-  max-width: 560px;
-  width: 100%;
-  border: 1px solid rgba(255,255,255,0.12);
-}
+      background: rgba(255,255,255,0.08);
+      padding: 45px 30px;
+      border-radius: 22px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+      max-width: 560px;
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.12);
+      transition: transform 0.2s ease;
+    }
+
     .content:hover {
       transform: scale(1.01);
     }
 
-h1 {
-  margin-top: 0;
-  font-size: 2.2rem;
-  font-weight: 800;
-}
+    h1 {
+      margin-top: 0;
+      font-size: 2.2rem;
+      font-weight: 800;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.35);
+    }
 
-p {
-  color: #d1d5db;
-  font-size: 0.98rem;
-  font-weight: 600;
-}
+    p {
+      color: #d1d5db;
+      font-size: 0.98rem;
+      font-weight: 600;
+    }
+
     .buttons {
       display: flex;
       gap: 18px;
       justify-content: center;
       flex-wrap: wrap;
-      margin-top: 30px;
+      margin-top: 28px;
     }
 
-  .vote-btn {
-  padding: 14px 28px;
-  font-size: 18px;
-  min-width: 150px;
-}
+    .vote-btn {
+      padding: 14px 28px;
+      border: none;
+      border-radius: 999px;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      color: white;
+      min-width: 150px;
+    }
 
     .year7 {
       background: linear-gradient(135deg, #22c55e, #16a34a);
@@ -188,22 +198,29 @@ p {
     }
 
     .results {
-      margin-top: 35px;
-      font-size: 1.2rem;
+      margin-top: 30px;
+      font-size: 1.1rem;
       font-weight: 700;
     }
 
     .message {
-      margin-top: 20px;
-      font-size: 1rem;
+      margin-top: 16px;
+      font-size: 0.98rem;
       color: #f8fafc;
       font-weight: 700;
       min-height: 24px;
     }
 
+    .current-vote {
+      margin-top: 8px;
+      font-size: 0.92rem;
+      color: #bfdbfe;
+      min-height: 20px;
+    }
+
     .back {
       display: inline-block;
-      margin-top: 30px;
+      margin-top: 22px;
       color: #93c5fd;
       text-decoration: none;
       font-weight: bold;
@@ -211,12 +228,6 @@ p {
 
     .back:hover {
       text-decoration: underline;
-    }
-
-    .current-vote {
-      margin-top: 10px;
-      font-size: 0.95rem;
-      color: #bfdbfe;
     }
   </style>
 </head>
@@ -257,46 +268,87 @@ p {
     </div>
   </div>
 
-  <script>
-    function toggleMenu() {
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      increment,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const voteRef = doc(db, "votes", "year7vsyear8");
+
+    let deviceId = localStorage.getItem("deviceId");
+    if (!deviceId) {
+      deviceId = "device_" + Math.random().toString(36).substring(2) + Date.now();
+      localStorage.setItem("deviceId", deviceId);
+    }
+
+    const userVoteRef = doc(db, "userVotes", deviceId);
+
+    window.toggleMenu = function () {
       document.getElementById("sidebar").classList.toggle("open");
       document.getElementById("overlay").classList.toggle("show");
+    };
+
+    const year7El = document.getElementById("year7Votes");
+    const year8El = document.getElementById("year8Votes");
+    const messageEl = document.getElementById("message");
+    const currentVoteEl = document.getElementById("currentVote");
+
+    let currentUserVote = "";
+
+    onSnapshot(voteRef, (snap) => {
+      const data = snap.data() || {};
+      year7El.textContent = data.year7 || 0;
+      year8El.textContent = data.year8 || 0;
+    });
+
+    async function loadUserVote() {
+      const snap = await getDoc(userVoteRef);
+      if (snap.exists()) {
+        currentUserVote = snap.data().vote || "";
+        currentVoteEl.textContent = "Your current vote: " + currentUserVote;
+        messageEl.textContent = "You can change your vote anytime.";
+      } else {
+        currentVoteEl.textContent = "You haven't voted yet.";
+        messageEl.textContent = "Pick your favorite year group.";
+      }
     }
 
-    let year7Votes = parseInt(localStorage.getItem("year7Votes")) || 0;
-    let year8Votes = parseInt(localStorage.getItem("year8Votes")) || 0;
-    let userVote = localStorage.getItem("userVote") || "";
+    window.vote = async function (choice) {
+      const updates = {};
 
-    function updateDisplay() {
-      document.getElementById("year7Votes").textContent = year7Votes;
-      document.getElementById("year8Votes").textContent = year8Votes;
+      if (currentUserVote === "Year 7") updates.year7 = increment(-1);
+      if (currentUserVote === "Year 8") updates.year8 = increment(-1);
 
-      document.getElementById("message").textContent = userVote
-        ? "You can change your vote anytime."
-        : "Pick your favorite year group.";
+      if (choice === "Year 7") updates.year7 = increment(1);
+      if (choice === "Year 8") updates.year8 = increment(1);
 
-      document.getElementById("currentVote").textContent = userVote
-        ? "Your current vote: " + userVote
-        : "You haven't voted yet.";
-    }
+      await setDoc(voteRef, updates, { merge: true });
+      await setDoc(userVoteRef, { vote: choice }, { merge: true });
 
-    function vote(choice) {
-      if (userVote === "Year 7") year7Votes--;
-      if (userVote === "Year 8") year8Votes--;
+      currentUserVote = choice;
+      currentVoteEl.textContent = "Your current vote: " + currentUserVote;
+      messageEl.textContent = "Vote updated!";
+    };
 
-      if (choice === "Year 7") year7Votes++;
-      if (choice === "Year 8") year8Votes++;
-
-      userVote = choice;
-
-      localStorage.setItem("year7Votes", year7Votes);
-      localStorage.setItem("year8Votes", year8Votes);
-      localStorage.setItem("userVote", userVote);
-
-      updateDisplay();
-    }
-
-    updateDisplay();
+    loadUserVote();
   </script>
 </body>
 </html>
